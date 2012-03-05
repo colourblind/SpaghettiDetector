@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace SpaghettiDetector
 {
     public class Node
     {
         public string TypeName
+        {
+            get;
+            private set;
+        }
+
+        public string ClassName
         {
             get;
             private set;
@@ -27,7 +34,8 @@ namespace SpaghettiDetector
 
         public Node(TypeDefinition t, int depth, SpaghettiDetector s)
         {
-            TypeName = t.Name;
+            TypeName = t.FullName;
+            ClassName = t.Name;
             AssemblyName = t.Module.Assembly.Name.Name;
             Dependencies = new List<Node>();
 
@@ -42,6 +50,27 @@ namespace SpaghettiDetector
                         typeList.Add(p.PropertyType);
                 }
 
+                foreach (FieldDefinition f in t.Fields)
+                {
+                    if (!typeList.Contains(f.FieldType))
+                        typeList.Add(f.FieldType);
+                }
+
+                foreach (MethodDefinition m in t.Methods)
+                {
+                    foreach (CustomAttribute a in m.CustomAttributes)
+                    {
+                        if (!typeList.Contains(a.AttributeType))
+                            typeList.Add(a.AttributeType);
+                    }
+
+                    foreach (VariableDefinition v in m.Body.Variables)
+                    {
+                        if (!typeList.Contains(v.VariableType))
+                            typeList.Add(v.VariableType);
+                    }
+                }
+
                 typeList = typeList.Where(x => !x.FullName.StartsWith("System") && !s.VisitedAssemblies.Contains(x.FullName)).ToList();
 
                 // Split this off so we can add fields, arguments, etc. later
@@ -49,10 +78,15 @@ namespace SpaghettiDetector
                 {
                     s.VisitedAssemblies.Add(r.FullName);
                     TypeDefinition typeDef = r.Resolve();
-                    if (typeDef != null)
+                    if (typeDef != null && typeDef != t) // Skip self-references
                         Dependencies.Add(new Node(r.Resolve(), depth + 1, s));
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return TypeName;
         }
     }
 }

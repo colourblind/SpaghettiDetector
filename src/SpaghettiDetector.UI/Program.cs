@@ -21,7 +21,8 @@ namespace SpaghettiDetector.UI
             SpaghettiDetector s = new SpaghettiDetector(assemblyName, maxDepth);
             IEnumerable<Node> result = s.Run();
 
-            YamlSerialiser serialiser = new YamlSerialiser(result);
+            // YamlSerialiser serialiser = new YamlSerialiser(result);
+            JsonSerialiser serialiser = new JsonSerialiser(result);
             serialiser.Run(Console.Out);
 
             //foreach (Node n in result)

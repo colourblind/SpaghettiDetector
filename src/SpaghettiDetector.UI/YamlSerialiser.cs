@@ -35,7 +35,6 @@ namespace SpaghettiDetector.UI
             }
             else
             {
-                int i = 0;
                 Type t = o.GetType();
                 foreach (PropertyInfo p in t.GetProperties())
                 {
