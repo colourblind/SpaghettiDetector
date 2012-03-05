@@ -43,6 +43,12 @@ namespace SpaghettiDetector
             {
                 IList<TypeReference> typeList = new List<TypeReference>();
 
+                if (t.BaseType != null)
+                {
+                    if (!typeList.Contains(t.BaseType))
+                        typeList.Add(t.BaseType);
+                }
+
                 foreach (PropertyDefinition p in t.Properties)
                 {
                     // Prevent duplicates of the same dependencies within this type
@@ -64,10 +70,13 @@ namespace SpaghettiDetector
                             typeList.Add(a.AttributeType);
                     }
 
-                    foreach (VariableDefinition v in m.Body.Variables)
+                    if (m.Body != null) // Interfaces (and I guess abstracts)
                     {
-                        if (!typeList.Contains(v.VariableType))
-                            typeList.Add(v.VariableType);
+                        foreach (VariableDefinition v in m.Body.Variables)
+                        {
+                            if (!typeList.Contains(v.VariableType))
+                                typeList.Add(v.VariableType);
+                        }
                     }
                 }
 
