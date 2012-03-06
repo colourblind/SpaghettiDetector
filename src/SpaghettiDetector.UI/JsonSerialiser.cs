@@ -17,6 +17,12 @@ namespace SpaghettiDetector.UI
             set;
         }
 
+        private IList<string> AssemblyList
+        {
+            get;
+            set;
+        }
+
         public JsonSerialiser(IEnumerable<Node> nodes)
         {
             Nodes = nodes;
@@ -26,6 +32,10 @@ namespace SpaghettiDetector.UI
         {
             IList<string> nodeData = new List<string>();
             IList<string> edgeData = new List<string>();
+            AssemblyList = new List<string>();
+
+            foreach (Node node in Nodes)
+                BuildAssemblyList(node);
 
             foreach (Node node in Nodes)
                 CheckNode(node, nodeData, edgeData);
@@ -39,9 +49,18 @@ namespace SpaghettiDetector.UI
             writer.WriteLine("];");
         }
 
+        private void BuildAssemblyList(Node node)
+        {
+            if (!AssemblyList.Contains(node.AssemblyName))
+                AssemblyList.Add(node.AssemblyName);
+            foreach (Node child in node.Dependencies)
+                BuildAssemblyList(child);
+        }
+
         public void CheckNode(Node node, IList<string> nodeData, IList<string> edgeData)
         {
-            string serialisedNode = String.Format("{{ id: '{0}' }}", node);
+            float hue = 360.0f * AssemblyList.IndexOf(node.AssemblyName) / AssemblyList.Count;
+            string serialisedNode = String.Format("{{ id: '{0}', colour: '{1}' }}", node, Utils.GetColourHexStringFromHSV(hue, 1, 1));
 
             if (nodeData.Contains(serialisedNode))
                 return;
