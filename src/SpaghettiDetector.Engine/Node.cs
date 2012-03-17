@@ -45,42 +45,65 @@ namespace SpaghettiDetector
 
                 if (t.BaseType != null)
                 {
-                    if (!typeList.Contains(t.BaseType))
-                        typeList.Add(t.BaseType);
+                    typeList.Add(t.BaseType);
+                }
+
+                foreach (TypeReference i in t.Interfaces)
+                {
+                    typeList.Add(t);
                 }
 
                 foreach (PropertyDefinition p in t.Properties)
                 {
-                    // Prevent duplicates of the same dependencies within this type
-                    if (!typeList.Contains(p.PropertyType))
-                        typeList.Add(p.PropertyType);
+                    typeList.Add(p.PropertyType);
                 }
 
                 foreach (FieldDefinition f in t.Fields)
                 {
-                    if (!typeList.Contains(f.FieldType))
-                        typeList.Add(f.FieldType);
+                    typeList.Add(f.FieldType);
                 }
 
                 foreach (MethodDefinition m in t.Methods)
                 {
                     foreach (CustomAttribute a in m.CustomAttributes)
                     {
-                        if (!typeList.Contains(a.AttributeType))
-                            typeList.Add(a.AttributeType);
+                        typeList.Add(a.AttributeType);
                     }
 
                     if (m.Body != null) // Interfaces (and I guess abstracts)
                     {
                         foreach (VariableDefinition v in m.Body.Variables)
                         {
-                            if (!typeList.Contains(v.VariableType))
-                                typeList.Add(v.VariableType);
+                            typeList.Add(v.VariableType);
+                        }
+
+                        // And now sift through the method line by line . . .
+                        foreach (Instruction i in m.Body.Instructions)
+                        {
+                            if (i.Operand == null)
+                                continue;
+
+                            Type operandType = i.Operand.GetType();
+                            TypeReference r;
+                            if (operandType == typeof(FieldDefinition))
+                                r = ((FieldDefinition)i.Operand).FieldType;
+                            else if (operandType == typeof(MethodDefinition))
+                                r = ((MethodDefinition)i.Operand).DeclaringType;
+                            else if (operandType == typeof(MethodReference))
+                                r = ((MethodReference)i.Operand).DeclaringType;
+                            else
+                                continue;
+
+                            typeList.Add(r);
                         }
                     }
                 }
 
-                typeList = typeList.Where(x => !x.FullName.StartsWith("System") && !s.VisitedAssemblies.Contains(x.FullName)).ToList();
+                typeList = typeList.Where(x => 
+                    !x.FullName.StartsWith("System")
+                    && !x.FullName.StartsWith("Microsoft")
+                    && !s.VisitedAssemblies.Contains(x.FullName)
+                ).Distinct().ToList();
 
                 // Split this off so we can add fields, arguments, etc. later
                 foreach (TypeReference r in typeList)
