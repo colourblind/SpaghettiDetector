@@ -41,11 +41,11 @@ namespace SpaghettiDetector.UI
                 CheckNode(node, nodeData, edgeData);
 
             writer.WriteLine("var nodes = [");
-            writer.WriteLine(String.Join(",\n\t", nodeData.ToArray()));
+            writer.WriteLine(String.Join(",\n\t", nodeData.OrderBy(x => x).ToArray()));
             writer.WriteLine("];");
 
             writer.WriteLine("var edges = [");
-            writer.WriteLine(String.Join(",\n\t", edgeData.ToArray()));
+            writer.WriteLine(String.Join(",\n\t", edgeData.OrderBy(x => x).ToArray()));
             writer.WriteLine("];");
         }
 
