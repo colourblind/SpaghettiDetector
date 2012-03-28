@@ -53,7 +53,7 @@ namespace SpaghettiDetector
             IList<Node> result = new List<Node>();
 
             foreach (TypeDefinition t in a.MainModule.GetTypes())
-                result.Add(new Node(t, 0, this));
+                result.Add(new Node(t, 0, VisitedAssemblies, MaxDepth));
 
             return result;
         }

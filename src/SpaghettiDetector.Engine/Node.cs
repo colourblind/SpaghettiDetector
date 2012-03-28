@@ -32,14 +32,14 @@ namespace SpaghettiDetector
             private set;
         }
 
-        public Node(TypeDefinition t, int depth, SpaghettiDetector s)
+        public Node(TypeDefinition t, int depth, IList<string> visitedTypes, int maxDepth)
         {
             TypeName = t.FullName;
             ClassName = t.Name;
             AssemblyName = t.Module.Assembly.Name.Name;
             Dependencies = new List<Node>();
 
-            if (depth < s.MaxDepth)
+            if (depth < maxDepth)
             {
                 IList<TypeReference> typeList = new List<TypeReference>();
 
@@ -102,16 +102,16 @@ namespace SpaghettiDetector
                 typeList = typeList.Where(x => 
                     !x.FullName.StartsWith("System")
                     && !x.FullName.StartsWith("Microsoft")
-                    && !s.VisitedAssemblies.Contains(x.FullName)
+                    && !visitedTypes.Contains(x.FullName)
                 ).Distinct().ToList();
 
                 // Split this off so we can add fields, arguments, etc. later
                 foreach (TypeReference r in typeList)
                 {
-                    s.VisitedAssemblies.Add(r.FullName);
+                    visitedTypes.Add(r.FullName);
                     TypeDefinition typeDef = r.Resolve();
                     if (typeDef != null && typeDef != t) // Skip self-references
-                        Dependencies.Add(new Node(r.Resolve(), depth + 1, s));
+                        Dependencies.Add(new Node(typeDef, depth + 1, visitedTypes, maxDepth));
                 }
             }
         }
