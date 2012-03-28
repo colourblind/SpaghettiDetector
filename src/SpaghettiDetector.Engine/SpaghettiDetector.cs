@@ -23,7 +23,7 @@ namespace SpaghettiDetector
             MaxDepth = 3;
         }
 
-        public IList<string> VisitedAssemblies
+        public IList<string> VisitedTypes
         {
             get;
             set;
@@ -37,6 +37,7 @@ namespace SpaghettiDetector
         {
             StartAssembly = AssemblyDefinition.ReadAssembly(assemblyPath);
             MaxDepth = maxDepth;
+            VisitedTypes = new List<string>();
         }
 
         public IEnumerable<Node> Run()
@@ -49,11 +50,11 @@ namespace SpaghettiDetector
 
         private IEnumerable<Node> Run(AssemblyDefinition a)
         {
-            VisitedAssemblies = new List<string>();
+            VisitedTypes.Clear();
             IList<Node> result = new List<Node>();
 
             foreach (TypeDefinition t in a.MainModule.GetTypes())
-                result.Add(new Node(t, 0, VisitedAssemblies, MaxDepth));
+                result.Add(new Node(t, 0, VisitedTypes, MaxDepth));
 
             return result;
         }
