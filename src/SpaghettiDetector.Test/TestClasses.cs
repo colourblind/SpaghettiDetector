@@ -29,4 +29,21 @@ namespace SpaghettiDetector.Test
     {
         int foo { get; set; }
     }
+
+    class TestClassMethod
+    {
+        public string Foo()
+        {
+            TestClassA a = new TestClassA();
+            return "Foo";
+        }
+    }
+
+    class TestClassMethod2
+    {
+        void Bar()
+        {
+            string result = (new TestClassMethod()).Foo();
+        }
+    }
 }
