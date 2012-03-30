@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MethodBodyTests.cs" />
+    <Compile Include="TestBase.cs" />
     <Compile Include="TestClasses.cs" />
   </ItemGroup>
   <ItemGroup>
