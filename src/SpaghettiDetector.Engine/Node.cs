@@ -56,11 +56,18 @@ namespace SpaghettiDetector
                 foreach (PropertyDefinition p in t.Properties)
                 {
                     typeList.Add(p.PropertyType);
+                    typeList = typeList.Concat(p.CustomAttributes.Select(x => x.AttributeType)).ToList();
                 }
 
                 foreach (FieldDefinition f in t.Fields)
                 {
                     typeList.Add(f.FieldType);
+                    typeList = typeList.Concat(f.CustomAttributes.Select(x => x.AttributeType)).ToList();
+                }
+
+                foreach (CustomAttribute a in t.CustomAttributes)
+                {
+                    typeList.Add(a.AttributeType);
                 }
 
                 foreach (MethodDefinition m in t.Methods)
