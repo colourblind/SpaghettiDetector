@@ -106,6 +106,9 @@ namespace SpaghettiDetector
                     }
                 }
 
+                foreach (TypeReference r in typeList)
+                    typeList = typeList.Concat(GetGenericArguments(r)).ToList();
+
                 typeList = typeList.Where(x => 
                     !x.FullName.StartsWith("System")
                     && !x.FullName.StartsWith("Microsoft")
@@ -126,6 +129,22 @@ namespace SpaghettiDetector
         public override string ToString()
         {
             return TypeName;
+        }
+
+        private IList<TypeReference> GetGenericArguments(TypeReference t)
+        {
+            IList<TypeReference> result = new List<TypeReference>();
+
+            if (t.IsGenericInstance)
+            {
+                foreach (TypeReference a in ((GenericInstanceType)t).GenericArguments)
+                {
+                    result.Add(a);
+                    result = result.Concat(GetGenericArguments(a)).ToList();
+                }
+            }
+
+            return result;
         }
     }
 }
