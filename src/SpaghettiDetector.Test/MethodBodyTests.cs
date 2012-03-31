@@ -24,4 +24,25 @@ namespace SpaghettiDetector.Test
             Assert.That(n.Dependencies.Where(x => x.TypeName.EndsWith("TestClassMethod")).Count() > 0);
         }
     }
+
+    #region Test Classes
+
+    class TestClassMethod
+    {
+        public string Foo()
+        {
+            TestClassA a = new TestClassA();
+            return "Foo";
+        }
+    }
+
+    class TestClassMethod2
+    {
+        void Bar()
+        {
+            string result = (new TestClassMethod()).Foo();
+        }
+    }
+
+    #endregion
 }

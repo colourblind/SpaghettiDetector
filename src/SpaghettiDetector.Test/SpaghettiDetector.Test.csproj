@@ -49,7 +49,6 @@
     <Compile Include="MethodBodyTests.cs" />
     <Compile Include="AttributeTests.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="TestClasses.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SpaghettiDetector.Engine\SpaghettiDetector.Engine.csproj">
