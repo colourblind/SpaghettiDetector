@@ -18,7 +18,7 @@ namespace SpaghettiDetector.UI
             if (!Int32.TryParse(args[args.Length - 1], out maxDepth))
                 maxDepth = 3;
 
-            SpaghettiDetector s = new SpaghettiDetector(assemblyName, maxDepth);
+            SpaghettiDetector s = new SpaghettiDetector(assemblyName, new Settings(maxDepth));
             IEnumerable<Node> result = s.Run();
 
             // YamlSerialiser serialiser = new YamlSerialiser(result);

@@ -32,14 +32,14 @@ namespace SpaghettiDetector
             private set;
         }
 
-        public Node(TypeDefinition t, int depth, IList<string> visitedTypes, int maxDepth)
+        public Node(TypeDefinition t, int depth, IList<string> visitedTypes, Settings settings)
         {
             TypeName = t.FullName;
             ClassName = t.Name;
             AssemblyName = t.Module.Assembly.Name.Name;
             Dependencies = new List<Node>();
 
-            if (depth < maxDepth)
+            if (depth < settings.MaxDepth)
             {
                 IList<TypeReference> typeList = new List<TypeReference>();
 
@@ -110,8 +110,7 @@ namespace SpaghettiDetector
                     typeList = typeList.Concat(GetGenericArguments(r)).ToList();
 
                 typeList = typeList.Where(x => 
-                    !x.FullName.StartsWith("System")
-                    && !x.FullName.StartsWith("Microsoft")
+                    !settings.NamespacesToIgnore.Exists(y => x.FullName.StartsWith(y + "."))
                     && !visitedTypes.Contains(x.FullName)
                 ).Distinct().ToList();
 
@@ -121,7 +120,7 @@ namespace SpaghettiDetector
                     visitedTypes.Add(r.FullName);
                     TypeDefinition typeDef = r.Resolve();
                     if (typeDef != null && typeDef != t) // Skip self-references
-                        Dependencies.Add(new Node(typeDef, depth + 1, visitedTypes, maxDepth));
+                        Dependencies.Add(new Node(typeDef, depth + 1, visitedTypes, settings));
                 }
             }
         }

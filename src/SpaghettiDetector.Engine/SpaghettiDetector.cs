@@ -12,15 +12,10 @@ namespace SpaghettiDetector
             set;
         }
 
-        public int MaxDepth
+        private Settings Settings
         {
             get;
             set;
-        }
-
-        public SpaghettiDetector()
-        {
-            MaxDepth = 3;
         }
 
         public IList<string> VisitedTypes
@@ -29,14 +24,15 @@ namespace SpaghettiDetector
             set;
         }
 
-        public SpaghettiDetector(string assemblyPath) : this(assemblyPath, 3)
+        public SpaghettiDetector(string assemblyPath) : this(assemblyPath, new Settings())
         {
+            
         }
 
-        public SpaghettiDetector(string assemblyPath, int maxDepth)
+        public SpaghettiDetector(string assemblyPath, Settings settings)
         {
             StartAssembly = AssemblyDefinition.ReadAssembly(assemblyPath);
-            MaxDepth = maxDepth;
+            Settings = settings;
             VisitedTypes = new List<string>();
         }
 
@@ -54,7 +50,7 @@ namespace SpaghettiDetector
             IList<Node> result = new List<Node>();
 
             foreach (TypeDefinition t in a.MainModule.GetTypes())
-                result.Add(new Node(t, 0, VisitedTypes, MaxDepth));
+                result.Add(new Node(t, 0, VisitedTypes, Settings));
 
             return result;
         }

@@ -20,7 +20,7 @@ namespace SpaghettiDetector.Test
         protected Node GetNode(string testClass)
         {
             TypeDefinition t = TestAssembly.MainModule.GetType("SpaghettiDetector.Test", testClass);
-            return new Node(t, 0, new List<string>(), 1);
+            return new Node(t, 0, new List<string>(), new Settings(1));
         }
 
     }
