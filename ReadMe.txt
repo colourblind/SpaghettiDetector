@@ -31,7 +31,6 @@ formats will follow (XML, YAML, more general JSON).
 TODO
 
 - More serialisation options
-- Filter out CompilerGenerated types
 - <Module>? What are you doing there?
 - Better test coverage
 
