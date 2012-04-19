@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 
 namespace SpaghettiDetector
@@ -50,7 +51,10 @@ namespace SpaghettiDetector
             IList<Node> result = new List<Node>();
 
             foreach (TypeDefinition t in a.MainModule.GetTypes())
-                result.Add(new Node(t, 0, VisitedTypes, Settings));
+            {
+                if (t.CustomAttributes.Count(x => x.AttributeType.Name == "CompilerGeneratedAttribute") == 0)
+                    result.Add(new Node(t, 0, VisitedTypes, Settings));
+            }
 
             return result;
         }

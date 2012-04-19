@@ -39,6 +39,7 @@ namespace SpaghettiDetector
             AssemblyName = t.Module.Assembly.Name.Name;
             Dependencies = new List<Node>();
 
+            // Check for CompilerGeneratedAttribute
             if (depth < settings.MaxDepth)
             {
                 IList<TypeReference> typeList = new List<TypeReference>();
@@ -119,7 +120,8 @@ namespace SpaghettiDetector
                 {
                     visitedTypes.Add(r.FullName);
                     TypeDefinition typeDef = r.Resolve();
-                    if (typeDef != null && typeDef != t) // Skip self-references
+                    if (typeDef != null && typeDef != t 
+                            && typeDef.CustomAttributes.Count(x => x.AttributeType.Name == "CompilerGeneratedAttribute") == 0)
                         Dependencies.Add(new Node(typeDef, depth + 1, visitedTypes, settings));
                 }
             }
